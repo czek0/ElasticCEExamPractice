@@ -1,5 +1,5 @@
 # Exercises for the Elastic Certified Engineer exam 8.14
-A custom made compliation of exercises for the Elastic Certied Engineer Exam. This Repo contains a mixture of 1-1 exam list specific questions and situational type questions similar to what you will get on the exam. 
+A custom made compliation of exercises for the Elastic Certied Engineer Exam. This Repo contains a mixture of exam list specific questions and situational type questions similar to what you will get on the exam. 
 
 
 # Exam Topics as of 2024 v8.14Data Management
