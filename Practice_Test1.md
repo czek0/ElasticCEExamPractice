@@ -1,5 +1,5 @@
 # Practice Set 1
-
+This Practice Set uses the `kibana-sample-data-flights`index as part of Elastic's sample data.
 #### Question: 1
  Define an index `flights_fixed` for the kibana_sample_data_flights dataset that includes a custom analyzer for the `Carrier` field called `case-analyzer`, allowing case-insensitive searches. It should use the `standard` tokenizer and make sure all characters are the same case. Provide the mapping and index creation request, check that the new mapping of `flights_fixed` show the custom analzyer for the `Carrier` field.
 
