@@ -2,7 +2,8 @@
 A custom made compliation of exercises for the Elastic Certied Engineer Exam. This Repo contains a mixture of exam list specific questions and situational type questions similar to what you will get on the exam. 
 
 
-# Exam Topics as of 2024 v8.14Data Management
+# Exam Topics as of 2024 v8.14
+Data Management
 
     Define an index that satisfies a given set of requirements
     Define and use an index template for a given pattern that satisfies a given set of requirements
