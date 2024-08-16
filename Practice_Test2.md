@@ -415,7 +415,7 @@ GET ecommerce_with_orderstatus/_mapping
 </details>
 
 #### Question: 9
-Create a snapshot of the `kibana_sample_data_ecommerce` index using a snapshot repository named ecommerce_snapshots. Delete kibana_sample_data_ecommerce. After creating the snapshot, mount it as a searchable snapshot named `searchable_snap_ecommerce`. Ensure that the restored index is searchable, and perform a search query to verify the setup by retrieving all documents where the `total_quantity` is greater than 1. Delete the cache and the mounted searchable snapshot. Restore the snapshot into a new index, `kibana_sample_data_ecommerce`.
+Create a snapshot repository named ecommerce_snapshots and define a snapshot lifecycle policy called `daily_snapshot_policy` to automatically take snapshots of the `kibana_sample_data_ecommerce` index every day at 4:30 PM. Manually create a snapshot of the kibana_sample_data_ecommerce index using this snapshot repository, then delete the `kibana_sample_data_ecommerce` index. Mount the snapshot as a searchable snapshot named `searchable_snap_ecommerce`, and ensure that the restored index is searchable by retrieving all documents where the `total_quantity` is greater than 1. Afterward, clean up by deleting the cache and the mounted searchable snapshot. Finally, restore the snapshot into a new index named `kibana_sample_data_ecommerce`.
 
 Topics Covered: Backup and restore a cluster and/or specific indices, Configure a snapshot to be searchable.
 
@@ -423,14 +423,43 @@ Topics Covered: Backup and restore a cluster and/or specific indices, Configure 
     <summary><b>Solution</b></summary>
 
 ``` bash
-PUT _snapshot/ecommerce/snapshot1
+# Create the snapshot
+PUT _snapshot/ecommerce_snapshots
+{
+  "type": "fs",
+  "settings": {
+    "location": "/mnt/elastic_backups"
+  }
+}
+# Define the lifecycle policy
+PUT /_slm/policy/daily_snapshot_policy
+{
+  "schedule": "0 30 16 * * ?",  # 4:30 PM daily
+  "name": "<daily-snapshot-{now/d}>",
+  "repository": "ecommerce_snapshots",
+  "config": {
+    "indices": ["kibana_sample_data_ecommerce"],
+    "ignore_unavailable": true,
+    "include_global_state": false
+  },
+  "retention": {
+    "expire_after": "30d",  # Keep snapshots for 30 days
+    "min_count": 1,
+    "max_count": 30
+  }
+}
+# Manually Create the Snapshot
+PUT _snapshot/ecommerce_snapshots/snapshot1
 {
   "indices": "kibana_sample_data_ecommerce"
 }
 
+
+# Delete the old index
 DELETE kibana_sample_data_ecommerce
 
-POST /_snapshot/ecommerce/snapshot1/_mount?wait_for_completion=true
+# Mount the snapshot for searching
+POST /_snapshot/ecommerce_snapshots/snapshot1/_mount?wait_for_completion=true
 {
   "index": "kibana_sample_data_ecommerce", 
   "renamed_index": "searchable_snap_ecommerce", 
@@ -441,31 +470,35 @@ POST /_snapshot/ecommerce/snapshot1/_mount?wait_for_completion=true
 }
 
 # check the index is in the searchable snapshots
-GET /_searchable_snapshots/stats
+GET /searchable_snap_ecommerce/stats
 
 GET searchable_snap_ecommerce/_search
 {
   "query": {
     "range": {
       "total_quantity": {
-        "gt": 10
+        "gt": 1
       }
     }
   }
 }
 
+
 # cleanup and delete
 POST /_searchable_snapshots/cache/clear
+
 DELETE searchable_snap_ecommerce
 
 
-# reindex
-POST _snapshot/ecommerce/snapshot1/_restore
+# Restore the snapshot
+POST _snapshot/ecommerce_snapshots/snapshot1/_restore
 {
   "indices": "kibana_sample_data_ecommerce"
 }
 
+# Verify
 GET kibana_sample_data_ecommerce/_count
+
 
 
 
