@@ -1,5 +1,5 @@
 # Practice Set 2
-This set of practice questions uses data from the `kibana_sample_data_eccomerce` ddataset.
+This set of practice questions uses data from the `kibana_sample_data_eccomerce` dataset.
 
 #### Question: 1
 Create a dummy index named ecommerce_shard_test with a single shard and no replicas. This setup should cause the cluster health to turn yellow. After creating the index, verify the cluster health status. Then, fix the shard issue by increasing the number of replicas and verify that the cluster health returns to green.
